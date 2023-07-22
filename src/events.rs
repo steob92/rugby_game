@@ -139,7 +139,7 @@ pub mod events {
 
     // Maul
     // Contested strength test between two groups of players
-    fn maul(att_group: Vec<&Player>, def_group: Vec<&Player>) -> (bool, RollResult) {
+    pub fn maul(att_group: Vec<&Player>, def_group: Vec<&Player>) -> (bool, RollResult) {
         let res = group_check(att_group, &AttributeTypes::Strength) -  group_check(def_group, &AttributeTypes::Strength);
 
         // Did the maul event succeed?
