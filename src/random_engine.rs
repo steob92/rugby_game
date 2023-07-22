@@ -16,6 +16,7 @@ pub mod rng_eng {
     }
 
     // Roll result, allowing for special events based on the roll result
+    #[derive(Debug)]
     pub enum RollResult {
         CriticalFail,    // roll 1
         CriticalSuccess, // roll 20

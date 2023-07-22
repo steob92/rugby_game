@@ -21,7 +21,7 @@ use player::player::{
 
 use team::team::Team;
 
-use events::events::tackle;
+use events::events::{tackle, scrum};
 
 fn main() {
     let mut _new_player = Player {
@@ -77,4 +77,8 @@ fn main() {
         "{} is tackled by {}...\n{}",
         new_team.players[0].name, new_team.players[2].name, res
     );
+
+
+    let (res_scrum, res_crit) = scrum(&new_team, &new_team);
+    println!("{} -> {:?}", res_scrum, res_crit)
 }

@@ -5,7 +5,13 @@ pub mod events {
     use crate::random_engine::rng_eng::{AttributeTypes, RollResult};
     use crate::team::team::Team;
 
+
+    // Critical value for a scrum event
+    const SCRUM_CRIT : i32 = 10;
+    const SCRUM_PUT_IN_ADV : i32 = 10;
+
     // Define the contested and team checks first
+
 
     // tackle
     // Return a bool and the roll result
@@ -46,5 +52,25 @@ pub mod events {
     }
 
     // Scrum
-    // This is a c
+    // This is a contested forwards challange
+    // The attacking team should have some form of advantange since they have the put in
+    // ToDo: Implement a PitchPosition that will proxy for presure
+    pub fn scrum( att_team :&Team, def_team :&Team) -> (bool, RollResult) {
+
+        let att_chall = att_team.forwards_challange_roll(&AttributeTypes::Strength) + SCRUM_PUT_IN_ADV;
+        let def_chall = def_team.forwards_challange_roll(&AttributeTypes::Strength);
+
+        // Check if the difference is greater than a critcal value
+        // Return a Critical Success otherwise
+        let res = att_chall > def_chall;
+
+
+        let crit = match  (att_chall - def_chall).abs() > SCRUM_CRIT {
+            true => RollResult::CriticalSuccess,
+            false => RollResult::Flat,
+        };
+
+        (res, crit)
+         
+    }
 }
