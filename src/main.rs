@@ -21,7 +21,7 @@ use player::player::{
 
 use team::team::Team;
 
-use events::events::{tackle, scrum};
+use events::events::{tackle, scrum, line_out};
 
 fn main() {
     let mut _new_player = Player {
@@ -80,5 +80,10 @@ fn main() {
 
 
     let (res_scrum, res_crit) = scrum(&new_team, &new_team);
-    println!("{} -> {:?}", res_scrum, res_crit)
+    println!("{} -> {:?}", res_scrum, res_crit);
+
+
+    let (res_scrum, res_crit) = line_out(&new_team, &new_team);
+    println!("{} -> {:?}", res_scrum, res_crit);
+
 }

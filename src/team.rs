@@ -3,7 +3,7 @@ pub mod team {
 
     use crate::random_engine::rng_eng::{AttributeTypes, RollResult, RollType};
 
-    use crate::player::player::{get_position, Player, FORWARDS};
+    use crate::player::player::{get_position, Player, FORWARDS, Position};
 
     // Team struct
     pub struct Team {
@@ -33,6 +33,12 @@ pub mod team {
             }
 
             tmp
+        }
+
+        // Get the player by position
+        pub fn get_player(&self, pos :Position) -> &Player{
+            let player =  self.players.iter().filter(|&x| x.selected_position == pos).collect::<Vec<&Player>>()[0];
+            player
         }
 
         // Team Challange Roll

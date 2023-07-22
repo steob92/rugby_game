@@ -1,14 +1,19 @@
 // Module to handle the match events
 
 pub mod events {
-    use crate::player::player::Player;
+    use crate::player::player::{Player, Position};
     use crate::random_engine::rng_eng::{AttributeTypes, RollResult};
     use crate::team::team::Team;
 
 
-    // Critical value for a scrum event
+    // Critical values for a scrum event
     const SCRUM_CRIT : i32 = 10;
     const SCRUM_PUT_IN_ADV : i32 = 10;
+
+
+    // Critical values for a line out event
+    const LINE_OUT_TROW_CRIT : i32 = 10;
+
 
     // Define the contested and team checks first
 
@@ -71,6 +76,43 @@ pub mod events {
         };
 
         (res, crit)
-         
+    }
+
+
+    // Line Out
+    // Contested Challange Roll
+    // Challange roll for the throw, the catch and play after...
+    pub fn line_out( att_team :&Team, def_team :&Team) -> (bool, RollResult){
+
+        // Throw in first check if the throw in is successful
+        // Fine the hooker on the att_team
+        let hooker = att_team.get_player(Position::Hooker);
+        let throw = hooker.challange_roll(AttributeTypes::Dexterity);
+
+        match throw.1 {
+            // Perfect throw
+            RollResult::CriticalSuccess => {
+                (true, RollResult::CriticalSuccess)
+            },
+            // Terrible throw
+            RollResult::CriticalFail => {
+                (false, RollResult::CriticalFail)
+            },
+            // Contestable throw
+            RollResult::Flat => {
+                (contest_line_out(throw.0, att_team, def_team), RollResult::Flat)
+            },
+        }
+    }
+
+
+    fn contest_line_out(put_in :i32, att_team :&Team, def_team :&Team) -> (bool) {
+        // Contested line out throw
+        let att_chal = att_team.forwards_challange_roll(&AttributeTypes::Dexterity);
+        let def_chal = def_team.forwards_challange_roll(&AttributeTypes::Dexterity);
+
+        // Add the throw score and a balancing score
+        att_chal + put_in + LINE_OUT_TROW_CRIT > def_chal
+        
     }
 }

@@ -55,6 +55,28 @@ pub mod player {
         }
     }
 
+
+    pub fn get_number(pos: Position) -> u8 {
+        match pos {
+            Position::LooseHead => 1,
+            Position::TightHead => 3,
+            Position::Hooker => 2,
+            Position::SecondRow => 4,
+            Position::SecondRow => 5,
+            Position::BlindSideFlanker => 6,
+            Position::OpenSideFlanker => 7,
+            Position::Number8 => 8,
+            Position::ScrumHalf => 9,
+            Position::FlyHalf => 10,
+            Position::Centre => 12,
+            Position::Centre => 13,
+            Position::Winger => 11,
+            Position::Winger => 14,
+            Position::FullBack => 15,
+            Position::Sub => 16,
+        }
+    }
+
     // Implement `Display` for `Position`.
     // Retrun the postion number for a given position
     impl fmt::Debug for Position {
