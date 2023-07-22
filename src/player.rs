@@ -1,25 +1,14 @@
-
-
-pub mod player{
+pub mod player {
+    use crate::random_engine::rng_eng::{AttributeTypes, Attributes, RollResult, RollType};
     use std::fmt; // Import `fmt`
-    use crate::random_engine::rng_eng::{
-        AttributeTypes,
-        Attributes,
-        RollType,
-        RollResult,
-    };
 
-    use crate::random_engine::rnd_name::{
-        NameGenerator
-    };
+    use crate::random_engine::rnd_name::NameGenerator;
 
-
-
-    #[derive(Clone,PartialEq)]
+    #[derive(Clone, PartialEq)]
     #[allow(dead_code)]
     // Enum of the available positions
 
-    pub enum Position{
+    pub enum Position {
         LooseHead,
         TightHead,
         Hooker,
@@ -34,7 +23,7 @@ pub mod player{
         FullBack,
         Sub, // sub will be the default and fallback for non-selected players
     }
-    
+
     pub const FORWARDS: [Position; 7] = [
         Position::LooseHead,
         Position::TightHead,
@@ -42,11 +31,11 @@ pub mod player{
         Position::SecondRow,
         Position::BlindSideFlanker,
         Position::OpenSideFlanker,
-        Position::Number8
+        Position::Number8,
     ];
-    
-    pub fn get_position(num : u8) -> Position{
-        match num{
+
+    pub fn get_position(num: u8) -> Position {
+        match num {
             1 => Position::LooseHead,
             3 => Position::TightHead,
             2 => Position::Hooker,
@@ -65,7 +54,7 @@ pub mod player{
             _ => Position::Sub,
         }
     }
-    
+
     // Implement `Display` for `Position`.
     // Retrun the postion number for a given position
     impl fmt::Debug for Position {
@@ -87,61 +76,54 @@ pub mod player{
             }
         }
     }
-    
-    
+
     // Struct for a player
     #[derive(Clone)]
-    pub struct Player{
-        pub age : u8,
-        pub name : String,
-        pub position : Vec<Position>,
-        pub weight : u32,
-        pub attributes : Attributes,
-        pub has_advantage : Vec<AttributeTypes>,
-        pub has_disadvantage : Vec<AttributeTypes>,
-        pub is_selected : bool,
-        pub selected_position : Position,
+    pub struct Player {
+        pub age: u8,
+        pub name: String,
+        pub position: Vec<Position>,
+        pub weight: u32,
+        pub attributes: Attributes,
+        pub has_advantage: Vec<AttributeTypes>,
+        pub has_disadvantage: Vec<AttributeTypes>,
+        pub is_selected: bool,
+        pub selected_position: Position,
     }
-    
-    impl Player{
-        
+
+    impl Player {
         // Default empty player
         pub fn new() -> Player {
             Player {
-                age : 0,
+                age: 0,
                 // name : "".to_string(),
-                name : NameGenerator::new().get_name(),
-                position : [].to_vec(),
-                weight : 0,
-                attributes : Attributes::new(),
-                has_advantage : [].to_vec(),
-                has_disadvantage : [].to_vec(),
-                is_selected : true,
-                selected_position : Position::Sub,
-             }
+                name: NameGenerator::new().get_name(),
+                position: [].to_vec(),
+                weight: 0,
+                attributes: Attributes::new(),
+                has_advantage: [].to_vec(),
+                has_disadvantage: [].to_vec(),
+                is_selected: true,
+                selected_position: Position::Sub,
+            }
         }
-    
+
         // Challange roll for this player
-        pub fn challange_roll(&self, attr : AttributeTypes) -> (i32, RollResult){
-    
+        pub fn challange_roll(&self, attr: AttributeTypes) -> (i32, RollResult) {
             // Should this be rewritten as a match?
             // Check if the player has advantage or disadvantage on the roll
             // Player will have advantage only if they can have advantage on the attribute and they can play the position
-            let roll_type = if  self.has_advantage.contains(&attr) && self.position.contains(&self.selected_position){
+            let roll_type = if self.has_advantage.contains(&attr)
+                && self.position.contains(&self.selected_position)
+            {
                 RollType::Advantage
-            } else if self.position.contains(&self.selected_position){
-                RollType::Disavantage
-            } else if self.has_disadvantage.contains(&attr) {
+            } else if (self.has_disadvantage.contains(&attr) || ! self.position.contains(&self.selected_position)) {
                 RollType::Disavantage
             } else {
                 RollType::Flat
             };
-            
+
             self.attributes.challange_roll(attr, roll_type)
         }
-    
     }
-
-
 }
-

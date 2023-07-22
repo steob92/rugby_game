@@ -1,24 +1,15 @@
 // Module to handle the match events
 
-pub mod events{
-    use crate::team::team::{
-        Team
-    };
-    use crate::random_engine::rng_eng::{
-        AttributeTypes, 
-        RollResult,
-    };
-    use crate::player::player::{
-        Player,
-    };
-
+pub mod events {
+    use crate::player::player::Player;
+    use crate::random_engine::rng_eng::{AttributeTypes, RollResult};
+    use crate::team::team::Team;
 
     // Define the contested and team checks first
 
     // tackle
-    // Return a bool and the roll result 
-    pub fn tackle( ball_carrier : &Player, tackler : &Player ) -> (bool, RollResult) {
-
+    // Return a bool and the roll result
+    pub fn tackle(ball_carrier: &Player, tackler: &Player) -> (bool, RollResult) {
         // Ball carrier will make a dex check
         let (bc_score, bc_result) = ball_carrier.challange_roll(AttributeTypes::Dexterity);
         // Tackler will make a strength check
@@ -34,21 +25,26 @@ pub mod events{
             // Ball carrier 2-19, Tackler 1
             (RollResult::Flat, RollResult::CriticalFail) => (true, RollResult::CriticalFail),
             // Ball carrier 1, Tackler 1
-            (RollResult::CriticalFail, RollResult::CriticalFail) => (bc_score < tk_score, RollResult::CriticalFail),
+            (RollResult::CriticalFail, RollResult::CriticalFail) => {
+                (bc_score < tk_score, RollResult::CriticalFail)
+            }
             // Ball carrier 20, Tackler 20
-            (RollResult::CriticalSuccess, RollResult::CriticalSuccess) => (bc_score < tk_score, RollResult::CriticalSuccess),
+            (RollResult::CriticalSuccess, RollResult::CriticalSuccess) => {
+                (bc_score < tk_score, RollResult::CriticalSuccess)
+            }
             // Ball carrier 2-19, Tackler 2-19
             (RollResult::Flat, RollResult::Flat) => (bc_score < tk_score, RollResult::Flat),
             // Ball carrier 20, tackler 1
-            (RollResult::CriticalSuccess, RollResult::CriticalFail) => (false, RollResult::CriticalSuccess),
+            (RollResult::CriticalSuccess, RollResult::CriticalFail) => {
+                (false, RollResult::CriticalSuccess)
+            }
             // Ball carrier 1, tackler 20
-            (RollResult::CriticalFail, RollResult::CriticalSuccess) => (true, RollResult::CriticalSuccess),
-        }        
+            (RollResult::CriticalFail, RollResult::CriticalSuccess) => {
+                (true, RollResult::CriticalSuccess)
+            }
+        }
     }
-
-
 
     // Scrum
     // This is a c
-    
 }
