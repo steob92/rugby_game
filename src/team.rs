@@ -1,5 +1,5 @@
 pub mod team {
-    use std::fmt; // Import `fmt`
+    // use std::fmt; // Import `fmt`
 
     use crate::random_engine::rng_eng::{AttributeTypes, RollResult, RollType};
 

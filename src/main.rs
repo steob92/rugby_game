@@ -72,7 +72,7 @@ fn main() {
         new_team.backs_challange_roll(&AttributeTypes::Strength)
     );
 
-    let (res, ty) = tackle(&new_team.players[0], &new_team.players[2]);
+    let (res, _ty) = tackle(&new_team.players[0], &new_team.players[2]);
     println!(
         "{} is tackled by {}...\n{}",
         new_team.players[0].name, new_team.players[2].name, res

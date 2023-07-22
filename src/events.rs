@@ -14,6 +14,8 @@ pub mod events {
     // Critical values for a line out event
     const LINE_OUT_TROW_CRIT : i32 = 10;
 
+    // Critical values for a maul event
+    const MAUL_CRIT :i32 = 10;
 
     // Define the contested and team checks first
 
@@ -105,8 +107,10 @@ pub mod events {
         }
     }
 
-
-    fn contest_line_out(put_in :i32, att_team :&Team, def_team :&Team) -> (bool) {
+    // Contested line out
+    // Dex challange roll to see which team will recover the line out
+    // Adding offsets to give advantage to the throwing teams
+    fn contest_line_out(put_in :i32, att_team :&Team, def_team :&Team) -> bool {
         // Contested line out throw
         let att_chal = att_team.forwards_challange_roll(&AttributeTypes::Dexterity);
         let def_chal = def_team.forwards_challange_roll(&AttributeTypes::Dexterity);
@@ -115,4 +119,45 @@ pub mod events {
         att_chal + put_in + LINE_OUT_TROW_CRIT > def_chal
         
     }
+
+
+    // Generic group check
+    fn group_check(group: Vec<&Player>, attr: &AttributeTypes) -> i32{
+        group.iter().map(|x| x.challange_roll(*attr).0).sum()
+    }
+
+    // Generic group contest
+    // Is this function needed?
+    // Requires two references whereas group check will just require one...
+    // Attacking and defending terms still relvent?
+    // Control absolute results with critical values on return
+    // fn  group_contest(att_team :Vec<&Player>, def_team :Vec<&Player>, att_attr :&AttributeTypes, def_attr :&AttributeTypes) -> i32 {
+    //     let att_check = group_check(att_team, att_attr);
+    //     let def_check = group_check(def_team, def_attr);
+    //     att_check - def_check
+    // }
+
+    // Maul
+    // Contested strength test between two groups of players
+    fn maul(att_group: Vec<&Player>, def_group: Vec<&Player>) -> (bool, RollResult) {
+        let res = group_check(att_group, &AttributeTypes::Strength) -  group_check(def_group, &AttributeTypes::Strength);
+
+        // Did the maul event succeed?
+        let suc = if res < 0 {
+            false
+        } else {
+            true
+        };
+
+        let roll  = if res.abs() < MAUL_CRIT{
+            RollResult::Flat
+        } else if res > 0 {
+            RollResult::CriticalSuccess
+        } else{
+            RollResult::CriticalFail
+        };
+
+        (suc, roll)
+    }
+
 }
