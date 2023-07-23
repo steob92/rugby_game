@@ -1,31 +1,29 @@
 // Module to handle the match events
 
 pub mod events {
-    use crate::player::player::{Player, Position};
-    use crate::random_engine::rng_eng::{AttributeTypes, RollResult, RollType};
-    use crate::pitch::PitchPosition;
-    use crate::team::team::Team;
-
+    use crate::{
+        // pitch::pitch::PitchPosition,
+        player::player::{Player, Position},
+        random_engine::rng_eng::{AttributeTypes, RollResult, RollType},
+        team::team::Team,
+    };
 
     // Critical values for a scrum event
-    const SCRUM_CRIT : i32 = 10;
-    const SCRUM_PUT_IN_ADV : i32 = 10;
-
+    const SCRUM_CRIT: i32 = 10;
+    const SCRUM_PUT_IN_ADV: i32 = 10;
 
     // Critical values for a line out event
-    const LINE_OUT_TROW_CRIT : i32 = 10;
+    const LINE_OUT_TROW_CRIT: i32 = 10;
 
     // Critical values for a maul event
-    const MAUL_CRIT :i32 = 10;
+    const MAUL_CRIT: i32 = 10;
 
     // Critical/Modifier values for kicking
-    const PENALTY_KICK_MOD : i32 = 1;
-    const DROP_KICK_SETUP_MOD : i32 = 5;
-    const KICKER_PROTECTION : i32 = 10;
-     
+    const PENALTY_KICK_MOD: i32 = 1;
+    const DROP_KICK_SETUP_MOD: i32 = 5;
+    const KICKER_PROTECTION: i32 = 10;
 
     // Define the contested and team checks first
-
 
     // tackle
     // Return a bool and the roll result
@@ -69,17 +67,16 @@ pub mod events {
     // This is a contested forwards challange
     // The attacking team should have some form of advantange since they have the put in
     // ToDo: Implement a PitchPosition that will proxy for presure
-    pub fn scrum( att_team :&Team, def_team :&Team) -> (bool, RollResult) {
-
-        let att_chall = att_team.forwards_challange_roll(&AttributeTypes::Strength) + SCRUM_PUT_IN_ADV;
+    pub fn scrum(att_team: &Team, def_team: &Team) -> (bool, RollResult) {
+        let att_chall =
+            att_team.forwards_challange_roll(&AttributeTypes::Strength) + SCRUM_PUT_IN_ADV;
         let def_chall = def_team.forwards_challange_roll(&AttributeTypes::Strength);
 
         // Check if the difference is greater than a critcal value
         // Return a Critical Success otherwise
         let res = att_chall > def_chall;
 
-
-        let crit = match  (att_chall - def_chall).abs() > SCRUM_CRIT {
+        let crit = match (att_chall - def_chall).abs() > SCRUM_CRIT {
             true => RollResult::CriticalSuccess,
             false => RollResult::Flat,
         };
@@ -87,12 +84,10 @@ pub mod events {
         (res, crit)
     }
 
-
     // Line Out
     // Contested Challange Roll
     // Challange roll for the throw, the catch and play after...
-    pub fn line_out( att_team :&Team, def_team :&Team) -> (bool, RollResult){
-
+    pub fn line_out(att_team: &Team, def_team: &Team) -> (bool, RollResult) {
         // Throw in first check if the throw in is successful
         // Fine the hooker on the att_team
         let hooker = att_team.get_player(Position::Hooker);
@@ -100,36 +95,31 @@ pub mod events {
 
         match throw.1 {
             // Perfect throw
-            RollResult::CriticalSuccess => {
-                (true, RollResult::CriticalSuccess)
-            },
+            RollResult::CriticalSuccess => (true, RollResult::CriticalSuccess),
             // Terrible throw
-            RollResult::CriticalFail => {
-                (false, RollResult::CriticalFail)
-            },
+            RollResult::CriticalFail => (false, RollResult::CriticalFail),
             // Contestable throw
-            RollResult::Flat => {
-                (contest_line_out(throw.0, att_team, def_team), RollResult::Flat)
-            },
+            RollResult::Flat => (
+                contest_line_out(throw.0, att_team, def_team),
+                RollResult::Flat,
+            ),
         }
     }
 
     // Contested line out
     // Dex challange roll to see which team will recover the line out
     // Adding offsets to give advantage to the throwing teams
-    fn contest_line_out(put_in :i32, att_team :&Team, def_team :&Team) -> bool {
+    fn contest_line_out(put_in: i32, att_team: &Team, def_team: &Team) -> bool {
         // Contested line out throw
         let att_chal = att_team.forwards_challange_roll(&AttributeTypes::Dexterity);
         let def_chal = def_team.forwards_challange_roll(&AttributeTypes::Dexterity);
 
         // Add the throw score and a balancing score
         att_chal + put_in + LINE_OUT_TROW_CRIT > def_chal
-        
     }
 
-
     // Generic group check
-    fn group_check(group: Vec<&Player>, attr: &AttributeTypes) -> i32{
+    fn group_check(group: Vec<&Player>, attr: &AttributeTypes) -> i32 {
         group.iter().map(|x| x.challange_roll(attr).0).sum()
     }
 
@@ -147,54 +137,53 @@ pub mod events {
     // Maul
     // Contested strength test between two groups of players
     pub fn maul(att_group: Vec<&Player>, def_group: Vec<&Player>) -> (bool, RollResult) {
-        let res = group_check(att_group, &AttributeTypes::Strength) -  group_check(def_group, &AttributeTypes::Strength);
+        let res = group_check(att_group, &AttributeTypes::Strength)
+            - group_check(def_group, &AttributeTypes::Strength);
 
         // Did the maul event succeed?
-        let suc = if res < 0 {
-            false
-        } else {
-            true
-        };
+        let suc = if res < 0 { false } else { true };
 
-        let roll  = if res.abs() < MAUL_CRIT{
+        let roll = if res.abs() < MAUL_CRIT {
             RollResult::Flat
         } else if res > 0 {
             RollResult::CriticalSuccess
-        } else{
+        } else {
             RollResult::CriticalFail
         };
 
         (suc, roll)
     }
 
+    // // Penalty kick to goal
+    // // Uncontested challange based on kicker's ability and shot difficulty
+    // pub fn penalty_goal(kicker: &Player, pos: &PitchPosition, is_home: &bool) -> bool {
+    //     let diff = pos.goal_kick_difficutly(is_home);
 
-    // Penalty kick to goal
-    // Uncontested challange based on kicker's ability and shot difficulty
-    pub fn penalty_goal( kicker: &Player, pos: &PitchPosition, is_home: &bool) -> bool{
-        let diff = pos.goal_kick_difficutly(is_home);
+    //     let res = kicker.challange_roll(&AttributeTypes::Dexterity);
+    //     // Always have at least a 5% chance of nailing/failing any kick
+    //     match res.1 {
+    //         RollResult::CriticalSuccess => true,
+    //         RollResult::CriticalFail => false,
+    //         RollResult::Flat => res.0 > diff,
+    //     }
+    // }
 
-        let res = kicker.challange_roll(&AttributeTypes::Dexterity);
-        // Always have at least a 5% chance of nailing/failing any kick
-        match res.1 {
-            RollResult::CriticalSuccess => true,
-            RollResult::CriticalFail => false,
-            RollResult::Flat => res.0 > diff,
-        }
-    }
+    // // Dropgoal
+    // // Semi-contested challange, will apply a bonus if the kick can be well setup
+    // pub fn dropgoal(
+    //     kicker: &Player,
+    //     pos: &PitchPosition,
+    //     is_home: &bool,
+    //     players: Vec<&Player>,
+    // ) -> bool {
+    //     // Check the setup
+    //     let setup = group_check(players, &AttributeTypes::Intelligence);
 
-    // Dropgoal
-    // Semi-contested challange, will apply a bonus if the kick can be well setup
-    pub fn dropgoal( kicker: &Player, pos: &PitchPosition, is_home: &bool, players : Vec<&Player> ) -> bool{
-        // Check the setup
-        let setup = group_check(players, &AttributeTypes::Intelligence);
-
-
-        // Give advantage on the kick
-        // ToDo: Modify challange roll to accept advantage/disadvantage
-        if setup > DROP_KICK_SETUP_MOD {
-            true;
-        }
-        true
-    }
-
+    //     // Give advantage on the kick
+    //     // ToDo: Modify challange roll to accept advantage/disadvantage
+    //     if setup > DROP_KICK_SETUP_MOD {
+    //         true;
+    //     }
+    //     true
+    // }
 }
