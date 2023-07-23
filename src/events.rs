@@ -2,7 +2,8 @@
 
 pub mod events {
     use crate::player::player::{Player, Position};
-    use crate::random_engine::rng_eng::{AttributeTypes, RollResult};
+    use crate::random_engine::rng_eng::{AttributeTypes, RollResult, RollType};
+    use crate::pitch::PitchPosition;
     use crate::team::team::Team;
 
 
@@ -17,6 +18,12 @@ pub mod events {
     // Critical values for a maul event
     const MAUL_CRIT :i32 = 10;
 
+    // Critical/Modifier values for kicking
+    const PENALTY_KICK_MOD : i32 = 1;
+    const DROP_KICK_SETUP_MOD : i32 = 5;
+    const KICKER_PROTECTION : i32 = 10;
+     
+
     // Define the contested and team checks first
 
 
@@ -24,9 +31,9 @@ pub mod events {
     // Return a bool and the roll result
     pub fn tackle(ball_carrier: &Player, tackler: &Player) -> (bool, RollResult) {
         // Ball carrier will make a dex check
-        let (bc_score, bc_result) = ball_carrier.challange_roll(AttributeTypes::Dexterity);
+        let (bc_score, bc_result) = ball_carrier.challange_roll(&AttributeTypes::Dexterity);
         // Tackler will make a strength check
-        let (tk_score, tk_result) = tackler.challange_roll(AttributeTypes::Strength);
+        let (tk_score, tk_result) = tackler.challange_roll(&AttributeTypes::Strength);
 
         match (bc_result, tk_result) {
             // Ball carrier 20, Tackler 2-19
@@ -89,7 +96,7 @@ pub mod events {
         // Throw in first check if the throw in is successful
         // Fine the hooker on the att_team
         let hooker = att_team.get_player(Position::Hooker);
-        let throw = hooker.challange_roll(AttributeTypes::Dexterity);
+        let throw = hooker.challange_roll(&AttributeTypes::Dexterity);
 
         match throw.1 {
             // Perfect throw
@@ -123,7 +130,7 @@ pub mod events {
 
     // Generic group check
     fn group_check(group: Vec<&Player>, attr: &AttributeTypes) -> i32{
-        group.iter().map(|x| x.challange_roll(*attr).0).sum()
+        group.iter().map(|x| x.challange_roll(attr).0).sum()
     }
 
     // Generic group contest
@@ -158,6 +165,36 @@ pub mod events {
         };
 
         (suc, roll)
+    }
+
+
+    // Penalty kick to goal
+    // Uncontested challange based on kicker's ability and shot difficulty
+    pub fn penalty_goal( kicker: &Player, pos: &PitchPosition, is_home: &bool) -> bool{
+        let diff = pos.goal_kick_difficutly(is_home);
+
+        let res = kicker.challange_roll(&AttributeTypes::Dexterity);
+        // Always have at least a 5% chance of nailing/failing any kick
+        match res.1 {
+            RollResult::CriticalSuccess => true,
+            RollResult::CriticalFail => false,
+            RollResult::Flat => res.0 > diff,
+        }
+    }
+
+    // Dropgoal
+    // Semi-contested challange, will apply a bonus if the kick can be well setup
+    pub fn dropgoal( kicker: &Player, pos: &PitchPosition, is_home: &bool, players : Vec<&Player> ) -> bool{
+        // Check the setup
+        let setup = group_check(players, &AttributeTypes::Intelligence);
+
+
+        // Give advantage on the kick
+        // ToDo: Modify challange roll to accept advantage/disadvantage
+        if setup > DROP_KICK_SETUP_MOD {
+            true;
+        }
+        true
     }
 
 }

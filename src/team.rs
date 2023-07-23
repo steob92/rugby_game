@@ -47,7 +47,7 @@ pub mod team {
             self.players
                 .iter() // For each player
                 .filter(|x| x.is_selected) // filter by active players
-                .map(|x| x.challange_roll(*attr).0) // Roll an individual challange roll
+                .map(|x| x.challange_roll(attr).0) // Roll an individual challange roll
                 .sum() // Sum the team challange roll
         }
 
@@ -56,7 +56,7 @@ pub mod team {
             self.players
                 .iter() // For each player
                 .filter(|x| x.is_selected && FORWARDS.contains(&x.position[0])) // filter by active players and forwards
-                .map(|x| x.challange_roll(*attr).0) // Roll an individual challange roll
+                .map(|x| x.challange_roll(attr).0) // Roll an individual challange roll
                 .sum() // Sum the team challange roll
         }
 
@@ -65,7 +65,7 @@ pub mod team {
             self.players
                 .iter() // For each player
                 .filter(|x| x.is_selected && !FORWARDS.contains(&x.position[0])) // filter by active players and backs
-                .map(|x| x.challange_roll(*attr).0) // Roll an individual challange roll
+                .map(|x| x.challange_roll(attr).0) // Roll an individual challange roll
                 .sum() // Sum the team challange roll
         }
     }

@@ -1,4 +1,4 @@
-pub mod Pitch{
+pub mod pitch{
 
     // Define pitch coordinates
     const PITCH_WIDTH :f32 = 70.;
@@ -24,7 +24,7 @@ pub mod Pitch{
                 90;
             }
 
-            let ydist = 0.5 * PITCH_WIDTH - self.y
+            let ydist = 0.5 * PITCH_WIDTH - self.y;
             let ang = if is_home {
                 ydist / (PITCH_LENGTH - self.x)
             } else{
@@ -56,9 +56,10 @@ pub mod Pitch{
                 46..=60 => 14,
                 61..=75 => 16,
                 75..=80 => 18,
+                // Anything beyond 80 degrees should be almost impossible
                 81..=85 => 20,
                 _ => 30,
-            }
+            };
             
             
             // Add in the distance modifier
@@ -66,16 +67,16 @@ pub mod Pitch{
                 // 0-22
                 0..=22 => 0,
                 // 22 - 30
-                2
-            } else if dist < 40 {
+                23..=30 => 2,
                 // 30 - 40
-                4
-            } else if dist < 50 {
+                31..=40 => 4,
                 // 40 - 50
-                6
-            } else {
-                10
-            }
+                41..=50 => 6,
+                // Outside of the half...
+                _ => 10,
+            };
+            // Return the difficulty
+            diff
         }
     }
 }

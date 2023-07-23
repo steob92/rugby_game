@@ -138,7 +138,7 @@ pub mod player {
         }
 
         // Challange roll for this player
-        pub fn challange_roll(&self, attr: AttributeTypes) -> (i32, RollResult) {
+        pub fn challange_roll(&self, attr: &AttributeTypes) -> (i32, RollResult) {
             // Should this be rewritten as a match?
             // Check if the player has advantage or disadvantage on the roll
             // Player will have advantage only if they can have advantage on the attribute and they can play the position
@@ -146,13 +146,13 @@ pub mod player {
                 && self.position.contains(&self.selected_position)
             {
                 RollType::Advantage
-            } else if self.has_disadvantage.contains(&attr) || ! self.position.contains(&self.selected_position) {
+            } else if self.has_disadvantage.contains(attr) || ! self.position.contains(&self.selected_position) {
                 RollType::Disavantage
             } else {
                 RollType::Flat
             };
 
-            self.attributes.challange_roll(attr, roll_type)
+            self.attributes.challange_roll(*attr, roll_type)
         }
     }
 }
