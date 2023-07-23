@@ -1,9 +1,10 @@
 pub mod team {
     // use std::fmt; // Import `fmt`
 
-    use crate::random_engine::rng_eng::{AttributeTypes, RollResult, RollType};
-
-    use crate::player::player::{get_position, Player, FORWARDS, Position};
+    use crate::{
+        player::player::{get_position, Player, Position, FORWARDS},
+        random_engine::rng_eng::{AttributeTypes, RollResult, RollType},
+    };
 
     // Team struct
     pub struct Team {
@@ -36,8 +37,12 @@ pub mod team {
         }
 
         // Get the player by position
-        pub fn get_player(&self, pos :Position) -> &Player{
-            let player =  self.players.iter().filter(|&x| x.selected_position == pos).collect::<Vec<&Player>>()[0];
+        pub fn get_player(&self, pos: Position) -> &Player {
+            let player = self
+                .players
+                .iter()
+                .filter(|&x| x.selected_position == pos)
+                .collect::<Vec<&Player>>()[0];
             player
         }
 

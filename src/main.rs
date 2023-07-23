@@ -4,6 +4,7 @@ mod events;
 mod player;
 mod random_engine;
 mod team;
+mod pitch;
 
 use random_engine::rng_eng::{
     // roll,

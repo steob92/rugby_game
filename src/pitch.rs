@@ -1,3 +1,5 @@
+// Module to handle anything related to the pitch
+
 pub mod pitch{
 
     // Define pitch coordinates
@@ -78,5 +80,7 @@ pub mod pitch{
             // Return the difficulty
             diff
         }
+
     }
+
 }

@@ -3,8 +3,7 @@
 // Random engine for the game
 pub mod rng_eng {
 
-    use crate::com::get_max;
-    use crate::com::get_min;
+    use crate::com::{get_max, get_min};
     use rand::distributions::{Distribution, Uniform};
 
     // Maybe usefull later when actually talking about rolls

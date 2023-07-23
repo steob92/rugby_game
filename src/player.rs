@@ -1,8 +1,10 @@
 pub mod player {
-    use crate::random_engine::rng_eng::{AttributeTypes, Attributes, RollResult, RollType};
     use std::fmt; // Import `fmt`
 
-    use crate::random_engine::rnd_name::NameGenerator;
+    use crate::{
+        random_engine::rnd_name::NameGenerator,
+        random_engine::rng_eng::{AttributeTypes, Attributes, RollResult, RollType}
+    };
 
     #[derive(Clone, PartialEq)]
     #[allow(dead_code)]
@@ -59,7 +61,6 @@ pub mod player {
         }
     }
 
-
     pub fn get_number(pos: Position) -> u8 {
         match pos {
             Position::LooseHead => 1,
@@ -96,10 +97,10 @@ pub mod player {
                 Position::Number8 => write!(f, "8"),
                 Position::ScrumHalf => write!(f, "9"),
                 Position::FlyHalf => write!(f, "10"),
-                Position::InsideCentre => write!(f,"12"),
-                Position::OutsideCentre => write!(f,"13"),
-                Position::LeftWinger => write!(f,"11"),
-                Position::RightWinger => write!(f,"14"),
+                Position::InsideCentre => write!(f, "12"),
+                Position::OutsideCentre => write!(f, "13"),
+                Position::LeftWinger => write!(f, "11"),
+                Position::RightWinger => write!(f, "14"),
                 Position::FullBack => write!(f, "15"),
                 Position::Sub => write!(f, "16+"),
             }
@@ -146,7 +147,9 @@ pub mod player {
                 && self.position.contains(&self.selected_position)
             {
                 RollType::Advantage
-            } else if self.has_disadvantage.contains(attr) || ! self.position.contains(&self.selected_position) {
+            } else if self.has_disadvantage.contains(attr)
+                || !self.position.contains(&self.selected_position)
+            {
                 RollType::Disavantage
             } else {
                 RollType::Flat
