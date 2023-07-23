@@ -2,7 +2,7 @@
 
 pub mod events {
     use crate::{
-        // pitch::pitch::PitchPosition,
+        pitch::pitch::PitchPosition,
         player::player::{Player, Position},
         random_engine::rng_eng::{AttributeTypes, RollResult, RollType},
         team::team::Team,
@@ -141,7 +141,8 @@ pub mod events {
             - group_check(def_group, &AttributeTypes::Strength);
 
         // Did the maul event succeed?
-        let suc = if res < 0 { false } else { true };
+        // On draw (res == 0) attacher maintain the advantage
+        let suc = res >= 0;
 
         let roll = if res.abs() < MAUL_CRIT {
             RollResult::Flat
@@ -154,36 +155,36 @@ pub mod events {
         (suc, roll)
     }
 
-    // // Penalty kick to goal
-    // // Uncontested challange based on kicker's ability and shot difficulty
-    // pub fn penalty_goal(kicker: &Player, pos: &PitchPosition, is_home: &bool) -> bool {
-    //     let diff = pos.goal_kick_difficutly(is_home);
+    // Penalty kick to goal
+    // Uncontested challange based on kicker's ability and shot difficulty
+    pub fn penalty_goal(kicker: &Player, pos: &PitchPosition, is_home: &bool) -> bool {
+        let diff = pos.goal_kick_difficutly(is_home);
 
-    //     let res = kicker.challange_roll(&AttributeTypes::Dexterity);
-    //     // Always have at least a 5% chance of nailing/failing any kick
-    //     match res.1 {
-    //         RollResult::CriticalSuccess => true,
-    //         RollResult::CriticalFail => false,
-    //         RollResult::Flat => res.0 > diff,
-    //     }
-    // }
+        let res = kicker.challange_roll(&AttributeTypes::Dexterity);
+        // Always have at least a 5% chance of nailing/failing any kick
+        match res.1 {
+            RollResult::CriticalSuccess => true,
+            RollResult::CriticalFail => false,
+            RollResult::Flat => res.0 > diff,
+        }
+    }
 
-    // // Dropgoal
-    // // Semi-contested challange, will apply a bonus if the kick can be well setup
-    // pub fn dropgoal(
-    //     kicker: &Player,
-    //     pos: &PitchPosition,
-    //     is_home: &bool,
-    //     players: Vec<&Player>,
-    // ) -> bool {
-    //     // Check the setup
-    //     let setup = group_check(players, &AttributeTypes::Intelligence);
+    // Dropgoal
+    // Semi-contested challange, will apply a bonus if the kick can be well setup
+    pub fn dropgoal(
+        kicker: &Player,
+        pos: &PitchPosition,
+        is_home: &bool,
+        players: Vec<&Player>,
+    ) -> bool {
+        // Check the setup
+        let setup = group_check(players, &AttributeTypes::Intelligence);
 
-    //     // Give advantage on the kick
-    //     // ToDo: Modify challange roll to accept advantage/disadvantage
-    //     if setup > DROP_KICK_SETUP_MOD {
-    //         true;
-    //     }
-    //     true
-    // }
+        // Give advantage on the kick
+        // ToDo: Modify challange roll to accept advantage/disadvantage
+        if setup > DROP_KICK_SETUP_MOD {
+            return false
+        }
+        true
+    }
 }

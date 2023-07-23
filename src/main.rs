@@ -1,10 +1,10 @@
 // use rand::Rng;
 mod com;
 mod events;
+mod pitch;
 mod player;
 mod random_engine;
 mod team;
-mod pitch;
 
 use random_engine::rng_eng::{
     // roll,
@@ -22,7 +22,7 @@ use player::player::{
 
 use team::team::Team;
 
-use events::events::{tackle, scrum, line_out};
+use events::events::{line_out, scrum, tackle};
 
 fn main() {
     let mut _new_player = Player {
@@ -79,12 +79,9 @@ fn main() {
         new_team.players[0].name, new_team.players[2].name, res
     );
 
-
     let (res_scrum, res_crit) = scrum(&new_team, &new_team);
     println!("{} -> {:?}", res_scrum, res_crit);
 
-
     let (res_scrum, res_crit) = line_out(&new_team, &new_team);
     println!("{} -> {:?}", res_scrum, res_crit);
-
 }

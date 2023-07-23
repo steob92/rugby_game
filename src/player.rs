@@ -3,7 +3,7 @@ pub mod player {
 
     use crate::{
         random_engine::rnd_name::NameGenerator,
-        random_engine::rng_eng::{AttributeTypes, Attributes, RollResult, RollType}
+        random_engine::rng_eng::{AttributeTypes, Attributes, RollResult, RollType},
     };
 
     #[derive(Clone, PartialEq)]
@@ -143,7 +143,7 @@ pub mod player {
             // Should this be rewritten as a match?
             // Check if the player has advantage or disadvantage on the roll
             // Player will have advantage only if they can have advantage on the attribute and they can play the position
-            let roll_type = if self.has_advantage.contains(&attr)
+            let roll_type = if self.has_advantage.contains(attr)
                 && self.position.contains(&self.selected_position)
             {
                 RollType::Advantage
